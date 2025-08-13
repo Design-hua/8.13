@@ -1,0 +1,41 @@
+name: GitHub Pages Jekyll Build
+
+on:
+  push:
+    branches:
+      - main    # 或你的默认分支，例如 master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 拉取仓库代码
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. 设置 Ruby 环境（Jekyll 需要 Ruby）
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2' # 适合 GitHub Pages
+
+    # 3. 安装 Bundler
+    - name: Install Bundler
+      run: gem install bundler
+
+    # 4. 安装依赖
+    - name: Install dependencies
+      run: bundle install
+
+    # 5. 构建 Jekyll 网站
+    - name: Build Jekyll site
+      run: bundle exec jekyll build --source . --destination ./_site
+
+    # 6. 部署到 GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./_site
